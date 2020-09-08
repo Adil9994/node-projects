@@ -18,6 +18,7 @@ geocode('omsk',data => {
 })
 */
 
+/*
 const add = (firstNumber, secondNumber, callback) => {
     setTimeout(() => {
         callback(firstNumber + secondNumber)
@@ -27,3 +28,6 @@ const add = (firstNumber, secondNumber, callback) => {
 add(1, 4, (sum) => {
     console.log(sum)
 })
+*/
+
+console.log(result)
