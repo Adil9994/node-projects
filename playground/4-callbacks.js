@@ -30,4 +30,13 @@ add(1, 4, (sum) => {
 })
 */
 
-console.log(result)
+const doWorkCallback = (callback) => {
+    setTimeout(() => {
+        callback(undefined, 10)
+    }, 1000)
+}
+
+doWorkCallback((firstArg, secondArg) => {
+    console.log(firstArg)
+    console.log(secondArg)
+})
