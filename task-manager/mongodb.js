@@ -1,13 +1,13 @@
-const { MongoClient, ObjectID } = require('mongodb')
-
-const connectionUrl = 'mongodb://localhost:27017'
-const databaseName = 'task-manager'
-
-MongoClient.connect(connectionUrl, {useNewUrlParser: true}, (error, client) => {
-    if (error) {
-        return console.log('Unable to connect' + error)
-    }
-    const db = client.db(databaseName)
+// const { MongoClient, ObjectID } = require('mongodb')
+//
+// const connectionUrl = 'mongodb://localhost:27017'
+// const databaseName = 'task-manager'
+//
+// MongoClient.connect(connectionUrl, {useNewUrlParser: true}, (error, client) => {
+//     if (error) {
+//         return console.log('Unable to connect' + error)
+//     }
+//     const db = client.db(databaseName)
 
     // db.collection('users').insertOne({
     //     name : 'asd',
