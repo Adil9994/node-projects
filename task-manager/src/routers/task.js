@@ -15,6 +15,7 @@ router.post('/tasks', async (req, res) => {
 router.get('/tasks', async (req, res) => {
     try {
         const tasks = await Task.find({})
+        if (tasks.length === 0) return res.status(200).send('No tasks in dbase')
         return res.send(tasks)
     } catch (err) {
         return res.status(500).send(err)
@@ -22,9 +23,14 @@ router.get('/tasks', async (req, res) => {
 })
 
 router.get('/tasks/:id', async (req, res) => {
-    const _id = req.params.id
     try {
-        const foundedTask = await Task.findById(_id)
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(500).send('Wrong ObjectID')
+        }
+        const foundedTask = await Task.findById(req.params.id)
+        if (!foundedTask) {
+            return res.status(400).send('Task with id ' + req.params.id + ' not found')
+        }
         return res.send(foundedTask)
     } catch (err) {
         return res.status(500).send(err)
@@ -38,10 +44,25 @@ router.patch('/tasks/:id', async (req, res) => {
         return allowedUpdates.includes(value)
     })
     if (!isValid) {
-        return res.status(400).send({ error : "Can't update"})
+        return res.status(400).send({error: "Can't update"})
     }
     try {
-        return res.status(200).send(await Task.findByIdAndUpdate(req.params.id, req.body, {new : true, runValidators: true}))
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(500).send('Wrong ObjectID')
+        }
+        const foundedTask = await Task.findById(req.params.id)
+
+        if (!foundedTask) {
+            return res.status(400).send('Task with id ' + req.params.id + ' not found')
+        }
+
+        updates.forEach((value) => {
+            foundedTask[value] = req.body[value]
+        })
+
+        return res.status(200).send(await foundedTask.save())
+
+        //return res.status(200).send(await Task.findByIdAndUpdate(req.params.id, req.body, {new : true, runValidators: true}))
     } catch (err) {
         return res.status(500).send(err)
     }
@@ -49,8 +70,14 @@ router.patch('/tasks/:id', async (req, res) => {
 
 router.delete('/tasks/:id', async (req, res) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id)
-        return res.status(200).send(task)
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(500).send('Wrong ObjectID')
+        }
+        const foundedTask = await Task.findByIdAndDelete(req.params.id)
+        if (!foundedTask) {
+            return res.status(400).send('Task with id ' + req.params.id + ' not found')
+        }
+        return res.status(200).send(foundedTask)
     } catch (error) {
         res.status(500).send(error)
     }
