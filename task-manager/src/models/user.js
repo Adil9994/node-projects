@@ -5,51 +5,55 @@ const jwt = require('jsonwebtoken')
 const Task = require('../models/task')
 
 const userSchema = new mongoose.Schema({
-    name : {
-        type : String,
-        required: true
-    },
-    password : {
-        type: String,
-        required: true,
-        trim: true,
-        minlength : 6,
-        validate(value) {
-            if (value.toLowerCase().includes('password')) {
-                throw new Error('Password cannot contain "password"')
-            }
-        }
-    },
-    email: {
-        type : String,
-        unique: true,
-        required : true,
-        validate(value) {
-            if (!validator.isEmail(value)) {
-                throw new Error('not good email')
-            }
-        }
-    },
-    age : {
-        type : Number,
-        validate(value) {
-            if (value < 0) {
-                throw new Error('Age must be a positive number')
-            }
-        }
-    },
-    tokens: [{
-        token: {
-            type : String,
+        name: {
+            type: String,
             required: true
-        }
-    }]
-})
+        },
+        password: {
+            type: String,
+            required: true,
+            trim: true,
+            minlength: 6,
+            validate(value) {
+                if (value.toLowerCase().includes('password')) {
+                    throw new Error('Password cannot contain "password"')
+                }
+            }
+        },
+        email: {
+            type: String,
+            unique: true,
+            required: true,
+            validate(value) {
+                if (!validator.isEmail(value)) {
+                    throw new Error('not good email')
+                }
+            }
+        },
+        age: {
+            type: Number,
+            validate(value) {
+                if (value < 0) {
+                    throw new Error('Age must be a positive number')
+                }
+            }
+        },
+        tokens: [{
+            token: {
+                type: String,
+                required: true
+            }
+        }],
+    },
+    {
+        timestamps: true
+    }
+)
 
 userSchema.virtual('tasks', {
-    ref: 'Task',
-    localField: '_id',
-    foreignField : 'ownerUser'
+    ref: 'Task', // The model to use
+    localField: '_id', // Find 'tasks' where `localField`; (where id of user
+    foreignField: 'ownerUser' // is equal to `foreignField`; equals to ownerUser)
 })
 
 userSchema.methods.toJSON = function () {
@@ -62,8 +66,8 @@ userSchema.methods.toJSON = function () {
 }
 
 userSchema.methods.generateAuthToken = async function () {
-    const token = jwt.sign({_id : this.id.toString() }, 'secret')
-    this.tokens.push({ token : token })
+    const token = jwt.sign({_id: this.id.toString()}, 'secret')
+    this.tokens.push({token: token})
     await this.save()
     return token
 }
