@@ -66,11 +66,12 @@ userSchema.methods.toJSON = function () {
     delete userObject.tokens
     delete userObject.avatar
 
+
     return userObject
 }
 
 userSchema.methods.generateAuthToken = async function () {
-    const token = jwt.sign({_id: this.id.toString()}, 'secret')
+    const token = jwt.sign({_id: this.id.toString()}, process.env.JWT_SECRET)
     this.tokens.push({token: token})
     await this.save()
     return token
