@@ -11,8 +11,9 @@ const $messages = document.querySelector('#messages')
 
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
-const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix : true })
+const { username : username, room : room } = Qs.parse(location.search, { ignoreQueryPrefix : true })
 
 socket.on('message', (message) => {
     console.log(message)
@@ -72,7 +73,15 @@ $sendLocationButton.addEventListener('click', () => {
     })
 })
 
-socket.emit('join', {username, room}, (error) => {
+socket.on('roomData', ({room , users}) => {
+    const html = Mustache.render(sidebarTemplate, {
+        room,
+        users
+    })
+    document.querySelector('#sidebar').innerHTML = html
+})
+
+socket.emit('join', {username : username, room : room}, (error) => {
     if (error) {
         alert(error)
         location.href = '/'
